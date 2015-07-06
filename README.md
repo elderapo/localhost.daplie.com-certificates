@@ -89,10 +89,11 @@ var options = {
 , requestCert: false
 , rejectUnauthorized: true
 , SNICallback: function (domainname, cb) {
-    // all domain requests will default to this HTTPS certificate
-    cb();
+    // normally we would check the domainname choose the correct certificate,
+    // but for this demo we'll always use this one (the default) instead
+    cb(null, require('tls').createSecureContext(options));
   }
-, NPNProtcols: ['http/1.1', 'http/1.0']
+, NPNProtcols: ['http/1.1']
 };
 
 var server = https.createServer(options);
