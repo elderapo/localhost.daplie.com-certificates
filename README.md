@@ -12,32 +12,28 @@ If you've done this kind of thing before:
 git clone https://github.com/Daplie/localhost.daplie.com-certificates.git ./certs
 ```
 
-If your webserver requires a PEM bundle use `./certs/bundle.pem`.
-
-If you webserver requires an array of CA certificates and a server certificate, use these instead:
-
-* `./certs/server/my-server.crt.pem`
-* `./certs/ca/intermediate.crt.pem`
-* `./certs/ca/root.crt.pem`
-
-You will also need the server private key `./certs/server/my-server.key.pem`.
+**Misnomer Alert**: Most webservers and software call for a **keypair** consisting of **server.crt** and **server.key**.
+In most cases these actually correspond to **fullchain.pem** (crt) and **privkey.pem** (key).
 
 <https://localhost.daplie.com> is an alias for <https://localhost> or <https://127.0.0.1>.
 
-The benefit of using this certificate for localhost development is that you will have the exact same security policies and APIs available in development as you would have in production.
+The benefit of using this certificate for localhost development is that you will have the exact same security policies
+and APIs available in development as you would have in production.
 
-### Assumptions
+### Let's Encrypt Certificate Conventions
 
-Following <https://github.com/letsencrypt/letsencrypt/issues/608> and
-<https://groups.google.com/a/letsencrypt.org/forum/#!topic/client-dev/jE5uK4lPx5g>,
-is the expected format for
-[Let's Encrypt](https://letsencrypt.org) certificates:
+The certificates are named according to the [Let's Encrypt](https://letsencrypt.org) conventions:
 
 * privkey.pem - the server private key
 * cert.pem - includes the bare server certficate only
 * chain.pem - includes intermediate certificates only
 * fullchain.pem - includes cert.pem and chain.pem
 * root.pem - (proposed) includes any Root CAs
+
+This convention is still subject to change.
+See <https://github.com/letsencrypt/letsencrypt/issues/608>
+and <https://groups.google.com/a/letsencrypt.org/forum/#!topic/client-dev/jE5uK4lPx5g>
+to follow the conversation.
 
 ## Screencast + Article
 
@@ -86,21 +82,21 @@ git clone https://github.com/Daplie/localhost.daplie.com-certificates.git ./cert
 ```javascript
 var fs = require('fs');
 var path = require('path');
-var certsPath = path.join(__dirname, 'certs', 'server');
-var caCertsPath = path.join(__dirname, 'certs', 'ca');
+var certsPath = path.join(__dirname, 'certs');
 
 //
 // SSL Certificates
 //
 var options = {
-  key: fs.readFileSync(path.join(certsPath, 'my-server.key.pem'), 'ascii')
-    + '\n' + fs.readFileSync(path.join(caCertsPath, 'intermediate.crt.pem'), 'ascii')
-, cert: fs.readFileSync(path.join(certsPath, 'my-server.crt.pem'))
+  key: fs.readFileSync(path.join(certsPath, 'privkey.pem'), 'ascii')
+, cert: fs.readFileSync(path.join(certsPath, 'fullchain.pem'), 'ascii')
+/*
+  // only for verification
 , ca: [
-    fs.readFileSync(path.join(caCertsPath, 'intermediate.crt.pem'))
-  , fs.readFileSync(path.join(caCertsPath, 'root.crt.pem'))
+    fs.readFileSync(path.join(certsPath, 'root.pem'))
   ]
-, requestCert: false
+, requestCert: true
+*/
 , rejectUnauthorized: true
 , SNICallback: function (domainname, cb) {
     // normally we would check the domainname choose the correct certificate,
@@ -380,8 +376,16 @@ hw4EbNX/3aBd7YdStysVAq45pmp06drE57xNNB6pXE0zX5IJL4hmXXeXxx12E6nV
 
 ### 06 Bundle the certificates (for Caddy et al)
 
-```
-cat my-server.crt.pem intermediate.crt.pem root.crt.pem > bundle.pem
+```bash
+cat server/my-server.key.pem > privkey.pem
+
+cat server/my-server.crt.pem > cert.pem
+
+cat ca/intermediate.crt.pem > chain.pem
+
+cat server/my-server.crt.pem ca/intermediate.crt.pem > fullchain.pem
+
+cat server/root.crt.pem > root.pem
 ```
 
 **Note**: The order *may* be important. I believe it *should* be from least to greatest authority as seen above.
