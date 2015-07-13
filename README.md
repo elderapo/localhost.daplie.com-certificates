@@ -28,15 +28,16 @@ The benefit of using this certificate for localhost development is that you will
 
 ### Assumptions
 
-You'll have to follow <https://github.com/letsencrypt/letsencrypt/issues/608> and
-<https://groups.google.com/a/letsencrypt.org/forum/#!topic/client-dev/jE5uK4lPx5g>
-to see if I'm correct, but I believe this is the expected format for
+Following <https://github.com/letsencrypt/letsencrypt/issues/608> and
+<https://groups.google.com/a/letsencrypt.org/forum/#!topic/client-dev/jE5uK4lPx5g>,
+is the expected format for
 [Let's Encrypt](https://letsencrypt.org) certificates:
 
 * privkey.pem - the server private key
-* cert.pem - includes the server and intermediate certificates
-* chain.pem - includes intermediate and root certificates
-* fullchain.pem - includes cert.pem and the root
+* cert.pem - includes the bare server certficate only
+* chain.pem - includes intermediate certificates only
+* fullchain.pem - includes cert.pem and chain.pem
+* root.pem - (proposed) includes any Root CAs
 
 ## Screencast + Article
 
