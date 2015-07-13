@@ -26,6 +26,18 @@ You will also need the server private key `./certs/server/my-server.key.pem`.
 
 The benefit of using this certificate for localhost development is that you will have the exact same security policies and APIs available in development as you would have in production.
 
+### Assumptions
+
+You'll have to follow <https://github.com/letsencrypt/letsencrypt/issues/608> and
+<https://groups.google.com/a/letsencrypt.org/forum/#!topic/client-dev/jE5uK4lPx5g>
+to see if I'm correct, but I believe this is the expected format for
+[Let's Encrypt](https://letsencrypt.org) certificates:
+
+* privkey.pem - the server private key
+* cert.pem - includes the server and intermediate certificates
+* chain.pem - includes intermediate and root certificates
+* fullchain.pem - includes cert.pem and the root
+
 ## Screencast + Article
 
 [![screencast thumbnail](https://i.imgur.com/F8aoJg5.png)](https://youtu.be/r92gqYHJc5c)
@@ -80,7 +92,8 @@ var caCertsPath = path.join(__dirname, 'certs', 'ca');
 // SSL Certificates
 //
 var options = {
-  key: fs.readFileSync(path.join(certsPath, 'my-server.key.pem'))
+  key: fs.readFileSync(path.join(certsPath, 'my-server.key.pem'), 'ascii')
+    + '\n' + fs.readFileSync(path.join(caCertsPath, 'intermediate.crt.pem'), 'ascii')
 , cert: fs.readFileSync(path.join(certsPath, 'my-server.crt.pem'))
 , ca: [
     fs.readFileSync(path.join(caCertsPath, 'intermediate.crt.pem'))
