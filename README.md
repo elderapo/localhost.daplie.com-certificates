@@ -7,11 +7,21 @@ For the sake of keywords: most people (including myself) think of these as "SSL 
 ## Install
 
 ```bash
-# the library itself
+# for use with any webserver
+git clone https://github.com/Daplie/localhost.daplie.com-certificates.git ./certs
+
+# as a node.js library
 npm install --save localhost.daplie.com-certificates
 
-# a quick and easy way to use it
+# a quick and easy https server
 npm install -g serve-https
+```
+
+```
+├── privkey.pem           # private key in PEM format
+├── cert.pem              # site certificate only
+├── chain.pem             # intermetiate certificate only
+└── fullchain.pem         # cert.pem + chain.pem
 ```
 
 ## Usage
