@@ -4,7 +4,78 @@ HTTPS certificates for `localhost.daplie.com`, free for anyone to use in testing
 
 For the sake of keywords: most people (including myself) think of these as "SSL certificates" but they are, in fact, signed RSA keypairs used for TLS encryption.
 
-## QuickStart
+## Install
+
+```bash
+# the library itself
+npm install --save localhost.daplie.com-certificates
+
+# a quick and easy way to use it
+npm install -g serve-https
+```
+
+## Usage
+
+QuickStart
+----------
+
+With bash
+
+```bash
+# serve https://localhost.daplie.com from current directory
+serve-https
+
+# serve from another directory and with an express app
+serve-https -d /path/to/public/ --express-app /path/to/app.js
+```
+
+With https
+
+```javascript
+var https = require('https');
+var httpsOptions = require('localhost.daplie.com-certificates').merge({});
+var server = https.createServer(httpsOptions, function (req, res) {
+  res.end("Hello, World!");
+});
+
+server.listen(443, function () {
+  console.log("Ready and listening at");
+  console.log("https://localhost.daplie.com:443/");
+});
+```
+
+Or with `tls.createSecureContext`:
+
+```javascript
+var tls = require('tls');
+var httpsOptions = require('localhost.daplie.com-certificates').merge({});
+var tlsContext = tls.createSecureContext(httpsOptions);
+```
+
+API
+---
+
+* `merge(opts)` will merge our defaults into your opts object (preferring options you have set)
+* `create(opts)` will create a new object with our defaults and your opts (preferring your options if both are set)
+
+Our defaults:
+
+```javascript
+{
+  key: '<<privkey.pem>>'
+, cert: '<<cert.pem + chain.pem>>'            // for localhost.daplie.com
+, ca: undefined
+, crl: undefined
+, requestCert: false
+, rejectUnauthorized: true
+, SNICallback: function (domainname, cb) {
+    cb(null, secureContext);
+  }
+  , NPNProtocols: ['http/1.1']
+}
+```
+
+## Manual Setup
 
 If you've done this kind of thing before:
 
@@ -57,7 +128,7 @@ npm install --save-dev localhost.daplie.com-certificates
 'use strict';
 
 var https = require('https');
-var server = https.createServer(require('localhost.daplie.com-certificates'));
+var server = https.createServer(require('localhost.daplie.com-certificates').create());
 var port = process.argv[2] || 8443;
 
 server.on('request', function (req, res) {
