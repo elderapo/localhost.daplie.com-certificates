@@ -1,6 +1,6 @@
 {
   "name": "localhost.daplie.com-certificates",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "HTTPS / TLS certs for localhost.daplie.com to be used in testing and development.",
   "main": "lib/index.js",
   "scripts": {
